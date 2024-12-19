@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конвертер WebP в PNG/JPEG</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px 0;
+            width: calc(100% - 22px);
+            font-size: 16px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        #output {
+            margin-top: 20px;
+        }
+
+        a {
+            display: block;
+            margin: 10px 0;
+            color: #007BFF;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #0056b3;
+        }
+
+        .file-upload-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.2s;
+            margin: 10px 0;
+        }
+
+        .file-upload-button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Конвертер WebP в PNG/JPEG</h1>
+        <input type="file" id="fileInput" accept=".webp">
+        <button id="convertButton">Конвертировать</button>
+        <canvas id="canvas" style="display: none;"></canvas>
+        <div id="output"></div>
+    </div>
+    <script>
+        document.getElementById("convertButton").addEventListener("click", function() {
+            const fileInput = document.getElementById("fileInput");
+            const outputDiv = document.getElementById("output");
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+
+            // Проверка на наличие файла
+            if (fileInput.files.length === 0) {
+                outputDiv.textContent = "Пожалуйста, выберите файл WebP.";
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    // Устанавливаем размеры канваса и рисуем изображение
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+
+                    // Создаем ссылки для скачивания
+                    createDownloadLink(canvas.toDataURL("image/png"), "png");
+                    createDownloadLink(canvas.toDataURL("image/jpeg"), "jpeg");
+                };
+                img.src = event.target.result;
+            };
+
+            reader.readAsDataURL(file);
+        });
+
+        function createDownloadLink(dataUrl, format) {
+            const link = document.createElement("a");
+            link.href = dataUrl;
+            link.download = `converted_image.${format}`;
+            link.textContent = `Скачать как ${format.toUpperCase()}`;
+            link.style.display = "block";
+            
+            document.getElementById("output").appendChild(link);
+        }
+    </script>
+</body>
+</html>
